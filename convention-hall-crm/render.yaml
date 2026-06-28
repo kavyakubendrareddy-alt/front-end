@@ -1,0 +1,22 @@
+services:
+  - type: web
+    name: convention-hall-crm-backend
+    env: docker
+    branch: main
+    dockerfilePath: backend/Dockerfile
+    plan: free
+    envVars:
+      - key: PORT
+        value: "8080"
+      - key: APP_PASSWORD
+        value: "@nrkfunctionhall"
+      - key: JWT_SECRET
+        value: "NRKFunctionHallCRM-JWT-SecretKey-2026-Min32Chars!"
+      - key: CORS_ORIGINS
+        value: "https://your-frontend-url.vercel.app"
+      - key: DB_URL
+        value: "jdbc:mysql://your-mysql-host:3306/convention_hall_crm?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true"
+      - key: DB_USERNAME
+        value: "root"
+      - key: DB_PASSWORD
+        value: ""

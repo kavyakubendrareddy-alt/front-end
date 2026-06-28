@@ -8,7 +8,7 @@ A simple, mobile-friendly CRM for managing convention hall bookings, payments, a
 
 ```
 convention-hall-crm/
-├── backend/     ← Spring Boot (Java 21) REST API
+├── backend/     ← Spring Boot (Java 17) REST API
 └── frontend/    ← React + Vite + Tailwind CSS
 ```
 
@@ -18,7 +18,7 @@ convention-hall-crm/
 
 | Tool | Version | Download |
 |------|---------|----------|
-| Java JDK | 21 | https://adoptium.net |
+| Java JDK | 17 | https://adoptium.net |
 | Maven | 3.9+ | https://maven.apache.org |
 | MySQL | 8.x | https://dev.mysql.com/downloads |
 | Node.js | 18+ | https://nodejs.org |
@@ -41,13 +41,19 @@ CREATE DATABASE IF NOT EXISTS convention_hall_crm;
 
 ### 2a. Configure database password
 
-Edit `backend/src/main/resources/application.properties`:
+Edit `backend/src/main/resources/application.properties` or create a local `.env` file from `backend/.env.example`:
 
 ```properties
-spring.datasource.url=jdbc:mysql://localhost:3306/convention_hall_crm?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true
-spring.datasource.username=root
-spring.datasource.password=YOUR_MYSQL_PASSWORD   ← change this
+DB_URL=jdbc:mysql://localhost:3306/convention_hall_crm?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true
+DB_USERNAME=root
+DB_PASSWORD=YOUR_MYSQL_PASSWORD
+APP_PASSWORD=@nrkfunctionhall
+JWT_SECRET=NRKFunctionHallCRM-JWT-SecretKey-2026-Min32Chars!
+CORS_ORIGINS=http://localhost:5173,https://your-frontend-url.vercel.app
 ```
+
+- `APP_PASSWORD` is already set to `@nrkfunctionhall` by default.
+- `JWT_SECRET` should be a strong secret string at least 32 characters long; the example value is safe to use as-is.
 
 ### 2b. Run the backend
 
@@ -122,7 +128,30 @@ You can serve the `dist/` folder with Nginx or any static host, proxying `/api` 
 
 ---
 
-## 6 — Upgrading to WhatsApp Business API (Future)
+## 6 — Deploying on Render
+
+A ready-to-use `backend/Dockerfile` and root-level `render.yaml` are included to deploy the backend on Render.
+
+1. Push your repo to GitHub.
+2. Create a new Render Web Service.
+3. Connect your repository and choose the `main` branch.
+4. Use the Docker deploy method and set the following environment variables:
+
+- `PORT=8080`
+- `APP_PASSWORD=@nrkfunctionhall`
+- `JWT_SECRET=NRKFunctionHallCRM-JWT-SecretKey-2026-Min32Chars!`
+- `CORS_ORIGINS=https://your-frontend-url.vercel.app`
+- `DB_URL=jdbc:mysql://mysql.railway.internal:3306/convention_hall_crm?createDatabaseIfNotExist=true&useSSL=false&serverTimezone=Asia/Kolkata&allowPublicKeyRetrieval=true`
+- `DB_USERNAME=root`
+- `DB_PASSWORD=<your-railway-database-password>`
+
+If you prefer, keep the default `APP_PASSWORD` and `JWT_SECRET` values shown above; they are already supported by the backend.
+
+> `JWT_SECRET` is the key used to sign JWT tokens. You can use the example secret above or generate a new random secret with at least 32 characters.
+
+---
+
+## 7 — Upgrading to WhatsApp Business API (Future)
 
 The `buildWhatsAppUrl()` function in `frontend/src/api/bookingApi.js` is the only place to update.
 Replace the `wa.me` redirect URL with a call to the official WhatsApp Cloud API:
