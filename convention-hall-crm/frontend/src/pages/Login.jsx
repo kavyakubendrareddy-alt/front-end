@@ -4,6 +4,10 @@ import axios from 'axios'
 import { setToken } from '../utils/auth'
 import { Eye, EyeOff, Lock } from 'lucide-react'
 
+const loginUrl = import.meta.env.VITE_API_URL
+    ? `${import.meta.env.VITE_API_URL}/api/auth/login`
+    : '/api/auth/login'
+
 export default function Login() {
     const [password, setPassword] = useState('')
     const [showPw, setShowPw] = useState(false)
@@ -16,7 +20,7 @@ export default function Login() {
         setError(null)
         setLoading(true)
         try {
-            const res = await axios.post('/api/auth/login', { password })
+            const res = await axios.post(loginUrl, { password })
             setToken(res.data.token)
             navigate('/dashboard', { replace: true })
         } catch (err) {
